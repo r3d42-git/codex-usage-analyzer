@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release-prerequisites:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        env:
+          MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: |
+          if [[ -n "$MACOS_CERTIFICATE_P12" && -n "$MACOS_CERTIFICATE_PASSWORD" && -n "$MACOS_SIGNING_IDENTITY" && -n "$APPLE_DEVELOPMENT_TEAM" && -n "$APPLE_API_KEY_P8" && -n "$APPLE_API_KEY_ID" && -n "$APPLE_API_ISSUER" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Release skipped: GitHub signing and App Store Connect secrets are not configured."
+          fi
+
+  notarized-release:
+    needs: release-prerequisites
+    if: needs.release-prerequisites.outputs.ready == 'true'
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Import Developer ID certificate
+        env:
+          MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          CERT_PATH="$RUNNER_TEMP/certificate.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+          echo "$MACOS_CERTIFICATE_P12" | base64 --decode > "$CERT_PATH"
+          security create-keychain -p "" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -k "$KEYCHAIN_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" "$KEYCHAIN_PATH"
+      - name: Configure notarytool
+        env:
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: |
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+          printf '%s' "$APPLE_API_KEY_P8" > "$KEY_PATH"
+          xcrun notarytool store-credentials codex-usage-analyzer-notary --key "$KEY_PATH" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER"
+          rm -f "$KEY_PATH"
+      - name: Build, sign, notarize, and verify
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+          SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          NOTARY_PROFILE: codex-usage-analyzer-notary
+        run: ./script/release.sh "${GITHUB_REF_NAME#v}"
+      - name: Publish verified DMG
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" \
+            ".release/$VERSION/Codex-Usage-Analyzer-$VERSION-mac-arm64.dmg" \
+            ".release/$VERSION/Codex-Usage-Analyzer-$VERSION-mac-arm64.dmg.sha256" \
+            --title "$GITHUB_REF_NAME" --generate-notes

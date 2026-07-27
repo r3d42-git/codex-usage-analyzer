@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run unit tests
+        run: swift test
+      - name: Build Xcode app
+        run: xcodebuild -project CodexUsageAnalyzer.xcodeproj -scheme 'Codex Usage Analyzer' -configuration Debug CODE_SIGNING_ALLOWED=NO build

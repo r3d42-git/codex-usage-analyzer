@@ -1,0 +1,85 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* CodexUsageAnalyzerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* CodexUsageAnalyzerApp.swift */; };
+		A10000000000000000000002 /* UsageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* UsageModels.swift */; };
+		A10000000000000000000003 /* UsageFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* UsageFormatting.swift */; };
+		A10000000000000000000004 /* SessionAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* SessionAnalyzer.swift */; };
+		A10000000000000000000005 /* ReportExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* ReportExporter.swift */; };
+		A10000000000000000000006 /* ReportRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* ReportRenderer.swift */; };
+		A10000000000000000000007 /* SessionAccessStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* SessionAccessStore.swift */; };
+		A10000000000000000000008 /* AnalyzerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* AnalyzerViewModel.swift */; };
+		A10000000000000000000009 /* ReportWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* ReportWebView.swift */; };
+		A1000000000000000000000A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* ContentView.swift */; };
+		A1000000000000000000000B /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* WebKit.framework */; };
+		A1000000000000000000000C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000001 /* CodexUsageAnalyzerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexUsageAnalyzerApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* UsageModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageModels.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* UsageFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageFormatting.swift; sourceTree = "<group>"; };
+		A20000000000000000000004 /* SessionAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAnalyzer.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* ReportExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportExporter.swift; sourceTree = "<group>"; };
+		A20000000000000000000006 /* ReportRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportRenderer.swift; sourceTree = "<group>"; };
+		A20000000000000000000007 /* SessionAccessStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAccessStore.swift; sourceTree = "<group>"; };
+		A20000000000000000000008 /* AnalyzerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzerViewModel.swift; sourceTree = "<group>"; };
+		A20000000000000000000009 /* ReportWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportWebView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000B /* Codex Usage Analyzer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Codex Usage Analyzer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000000000000000000000C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		A2000000000000000000000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A30000000000000000000001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A1000000000000000000000B /* WebKit.framework in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A40000000000000000000001 = {isa = PBXGroup; children = (A40000000000000000000002 /* Sources */, A2000000000000000000000D /* Assets.xcassets */, A40000000000000000000007 /* Frameworks */, A40000000000000000000008 /* Products */); sourceTree = "<group>"; };
+		A40000000000000000000002 /* Sources */ = {isa = PBXGroup; children = (A40000000000000000000003 /* App */, A40000000000000000000004 /* Models */, A40000000000000000000005 /* Services */, A40000000000000000000006 /* Stores */, A40000000000000000000009 /* Support */, A4000000000000000000000A /* Views */); path = Sources/CodexUsageAnalyzer; sourceTree = SOURCE_ROOT; };
+		A40000000000000000000003 /* App */ = {isa = PBXGroup; children = (A20000000000000000000001 /* CodexUsageAnalyzerApp.swift */, ); path = App; sourceTree = "<group>"; };
+		A40000000000000000000004 /* Models */ = {isa = PBXGroup; children = (A20000000000000000000002 /* UsageModels.swift */, ); path = Models; sourceTree = "<group>"; };
+		A40000000000000000000005 /* Services */ = {isa = PBXGroup; children = (A20000000000000000000004 /* SessionAnalyzer.swift */, A20000000000000000000005 /* ReportExporter.swift */, A20000000000000000000006 /* ReportRenderer.swift */, ); path = Services; sourceTree = "<group>"; };
+		A40000000000000000000006 /* Stores */ = {isa = PBXGroup; children = (A20000000000000000000007 /* SessionAccessStore.swift */, A20000000000000000000008 /* AnalyzerViewModel.swift */, ); path = Stores; sourceTree = "<group>"; };
+		A40000000000000000000007 /* Frameworks */ = {isa = PBXGroup; children = (A2000000000000000000000C /* WebKit.framework */, ); name = Frameworks; sourceTree = "<group>"; };
+		A40000000000000000000008 /* Products */ = {isa = PBXGroup; children = (A2000000000000000000000B /* Codex Usage Analyzer.app */, ); name = Products; sourceTree = "<group>"; };
+		A40000000000000000000009 /* Support */ = {isa = PBXGroup; children = (A20000000000000000000003 /* UsageFormatting.swift */, ); path = Support; sourceTree = "<group>"; };
+		A4000000000000000000000A /* Views */ = {isa = PBXGroup; children = (A20000000000000000000009 /* ReportWebView.swift */, A2000000000000000000000A /* ContentView.swift */, ); path = Views; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A50000000000000000000001 /* Codex Usage Analyzer */ = {isa = PBXNativeTarget; buildConfigurationList = A60000000000000000000001 /* Build configuration list for PBXNativeTarget "Codex Usage Analyzer" */; buildPhases = (A70000000000000000000001 /* Sources */, A30000000000000000000001 /* Frameworks */, A70000000000000000000002 /* Resources */, ); buildRules = (); dependencies = (); name = "Codex Usage Analyzer"; productName = CodexUsageAnalyzer; productReference = A2000000000000000000000B /* Codex Usage Analyzer.app */; productType = "com.apple.product-type.application"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A80000000000000000000001 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2600; LastUpgradeCheck = 2600; TargetAttributes = {A50000000000000000000001 = {CreatedOnToolsVersion = 26.0;};};}; buildConfigurationList = A60000000000000000000002 /* Build configuration list for PBXProject "CodexUsageAnalyzer" */; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, de, ); mainGroup = A40000000000000000000001; productRefGroup = A40000000000000000000008 /* Products */; projectDirPath = ""; projectRoot = ""; targets = (A50000000000000000000001 /* Codex Usage Analyzer */, ); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A70000000000000000000002 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A1000000000000000000000C /* Assets.xcassets in Resources */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A70000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001 /* CodexUsageAnalyzerApp.swift in Sources */, A10000000000000000000002 /* UsageModels.swift in Sources */, A10000000000000000000003 /* UsageFormatting.swift in Sources */, A10000000000000000000004 /* SessionAnalyzer.swift in Sources */, A10000000000000000000005 /* ReportExporter.swift in Sources */, A10000000000000000000006 /* ReportRenderer.swift in Sources */, A10000000000000000000007 /* SessionAccessStore.swift in Sources */, A10000000000000000000008 /* AnalyzerViewModel.swift in Sources */, A10000000000000000000009 /* ReportWebView.swift in Sources */, A1000000000000000000000A /* ContentView.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A90000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; CODE_SIGN_STYLE = Automatic; MACOSX_DEPLOYMENT_TARGET = 14.0; SDKROOT = macosx; SWIFT_VERSION = 6.0; }; name = Debug; };
+		A90000000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; MACOSX_DEPLOYMENT_TARGET = 14.0; SDKROOT = macosx; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_VERSION = 6.0; }; name = Release; };
+		A90000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ARCHS = arm64; ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_ENTITLEMENTS = CodexUsageAnalyzer.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; ENABLE_HARDENED_RUNTIME = YES; EXECUTABLE_NAME = CodexUsageAnalyzer; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "Codex Usage Analyzer"; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MACOSX_DEPLOYMENT_TARGET = 14.0; MARKETING_VERSION = 1.0.0; PRODUCT_BUNDLE_IDENTIFIER = com.c5vcpq5gsr.codexusageanalyzer; PRODUCT_NAME = "Codex Usage Analyzer"; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; }; name = Debug; };
+		A90000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ARCHS = arm64; ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_ENTITLEMENTS = CodexUsageAnalyzer.entitlements; CURRENT_PROJECT_VERSION = 1; ENABLE_HARDENED_RUNTIME = YES; EXECUTABLE_NAME = CodexUsageAnalyzer; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "Codex Usage Analyzer"; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MACOSX_DEPLOYMENT_TARGET = 14.0; MARKETING_VERSION = 1.0.0; PRODUCT_BUNDLE_IDENTIFIER = com.c5vcpq5gsr.codexusageanalyzer; PRODUCT_NAME = "Codex Usage Analyzer"; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A60000000000000000000001 /* Build configuration list for PBXNativeTarget "Codex Usage Analyzer" */ = {isa = XCConfigurationList; buildConfigurations = (A90000000000000000000003 /* Debug */, A90000000000000000000004 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A60000000000000000000002 /* Build configuration list for PBXProject "CodexUsageAnalyzer" */ = {isa = XCConfigurationList; buildConfigurations = (A90000000000000000000001 /* Debug */, A90000000000000000000002 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = A80000000000000000000001 /* Project object */;
+}

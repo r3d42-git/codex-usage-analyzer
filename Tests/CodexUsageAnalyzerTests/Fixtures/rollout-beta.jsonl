@@ -1,0 +1,3 @@
+{"timestamp":"2026-07-21T13:10:00Z","payload":{"type":"turn_context","thread_id":"fixture-beta","metadata":{"cwd":"/Volumes/Work/Beta","model":"future-model","reasoning_effort":"medium"}}}
+{"timestamp":"2026-07-21T13:10:02Z","payload":{"type":"user_message","message":{"role":"user","content":"Eine zweite Sitzung mit unbekanntem Modell."}}}
+{"timestamp":"2026-07-21T13:10:07Z","payload":{"type":"token_count","total_token_usage":{"prompt_tokens":200,"cached_tokens":50,"completion_tokens":25,"reasoning_tokens":4,"total_tokens":225}}}
