@@ -29,6 +29,8 @@ The debug app is written to `dist/Codex Usage Analyzer.app`. Choose `~/.codex/se
 
 ## Release
 
+The first public release is [v1.0.0](https://github.com/c5vcpq5gsr-alt/codex-usage-analyzer/releases/tag/v1.0.0). It provides the notarized Apple-Silicon DMG and its SHA-256 checksum.
+
 `script/release.sh VERSION` requires the local environment variables `DEVELOPMENT_TEAM`, `SIGNING_IDENTITY`, and `NOTARY_PROFILE`; no credentials are stored in the repository. The tag workflow expects these GitHub secrets: `MACOS_CERTIFICATE_P12`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_SIGNING_IDENTITY`, `APPLE_DEVELOPMENT_TEAM`, `APPLE_API_KEY_P8`, `APPLE_API_KEY_ID`, and `APPLE_API_ISSUER`.
 
 The release script signs, notarizes, staples, and verifies `Codex-Usage-Analyzer-VERSION-mac-arm64.dmg`. `script/publish_release.sh VERSION` downloads the published asset again and verifies it before reporting success.
