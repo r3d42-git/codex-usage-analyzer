@@ -18,8 +18,8 @@
 
 ## Veröffentlichung
 
-- Vorgesehenes Ziel: `c5vcpq5gsr-alt/codex-usage-analyzer`.
-- Öffentliches Repository: `https://github.com/c5vcpq5gsr-alt/codex-usage-analyzer`.
+- Vorgesehenes Ziel: `r3d42-git/codex-usage-analyzer`.
+- Öffentliches Repository: `https://github.com/r3d42-git/codex-usage-analyzer`.
 - v1.0.0: `Codex-Usage-Analyzer-1.0.0-mac-arm64.dmg`, SHA-256 `512bb0a15c3314e503da3732811519dc9b4531ed5df85ed5292a64e1928d05c8`.
 - Der DMG wurde lokal mit Developer ID, Hardened Runtime und Timestamp signiert, von Apple akzeptiert (Submission `890076da-6b69-47f5-b246-45de8f590195`), gestapelt und nach dem GitHub-Download erneut über `codesign`, `hdiutil`, `stapler` und Gatekeeper geprüft (`source=Notarized Developer ID`).
 - CI für den initialen Quellstand lief erfolgreich in GitHub Actions (Run `30299046100`). Der tagbasierte Release-Workflow aktiviert die cloudseitige Notarisierung erst, sobald die in der README benannten GitHub Secrets gesetzt sind; v1.0.0 wurde bewusst über das lokale Keychain-Profil erzeugt und danach hochgeladen.
