@@ -62,17 +62,26 @@
 - Die DMG enthält `LICENSE.txt`. `release.sh` verlangt vor dem Build den GPL-Text; `verify_release.sh` verlangt nach dem Mount dieselbe Datei und vergleicht sie bytegenau mit dem Quellstand. Damit kann kein Release ohne sichtbare GPL-Lizenz im ausgelieferten Container erstellt werden.
 - Version 1.1.1, Build 3, arm64. Die Preislogik bleibt unverändert; der Hinweis, dass Astra für den Nutzer in Codex derzeit nicht auswählbar ist, ist kein Änderungsauftrag.
 
-## Veröffentlicht: v1.1.0 (12.09.2026)
+## Zurückgezogen: v1.1.0 (12.09.2026)
 
-- Release: https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.1.0
-- Unveränderlicher Tag `v1.1.0` auf Release-Commit `75e06db947d7feaffb45eb6efda1243bf9fdd29b` (Version 1.1.0 / Build 2); diese Abschlussdokumentation folgt separat.
-- DMG: [Codex-Usage-Analyzer-1.1.0-mac-arm64.dmg](https://github.com/r3d42-git/codex-usage-analyzer/releases/download/v1.1.0/Codex-Usage-Analyzer-1.1.0-mac-arm64.dmg), 1.257.428 Bytes, SHA-256 `bf48d5566a452ce8d7db45557a1dc09f88e32e97a706a74215674068512b6b7c`. Öffentliche `.dmg.sha256` ist hochgeladen und gegen den frischen Download geprüft.
+- Die öffentliche Release-Seite, Assets und der lokale/entfernte Git-Tag `v1.1.0` wurden auf ausdrücklichen Nutzerauftrag nach Veröffentlichung von v1.1.1 gelöscht. Die frühere DMG wird nicht mehr angeboten.
+- Der frühere Quellcommit `75e06db947d7feaffb45eb6efda1243bf9fdd29b` bleibt Teil der öffentlichen Git-Geschichte. Seine damals veröffentlichte MIT-Lizenz ist nicht rückwirkend widerrufbar.
 - Apple: App-ZIP `ebc9629f-c741-4080-a046-ea2221efd3f8` und finale DMG `78ad8684-36af-44a1-95cb-5ac8eeb6d25c` jeweils **Accepted**. App vor dem Verpacken und DMG separat gestapelt. Lokale JSON-Belege unter `.release/1.1.0/`.
 - Identität: `com.c5vcpq5gsr.codexusageanalyzer`, arm64, Developer ID Application: Philipp John Hild (G6JH37W285), Hardened Runtime und Timestamp. Lokaler finaler Container und frischer GitHub-Download bestanden `codesign`, `hdiutil verify`, App-/DMG-`stapler validate` und Gatekeeper (`source=Notarized Developer ID`). GitHub-Asset-Digest, lokale Prüfsumme und Download sind identisch.
 - Lokale Release-Gates: 12 Swift-Tests sowie Python-Preisfälle erfolgreich. Publisher-Trockenlauf, Versionsabwehr und sauberer Quellstand geprüft.
 - GitHub CI zum Release-Commit: [34719024748](https://github.com/r3d42-git/codex-usage-analyzer/actions/runs/34719024748), Swift-Tests und Xcode-Build erfolgreich.
 - GitHub Release-Workflow [34719025587](https://github.com/r3d42-git/codex-usage-analyzer/actions/runs/34719025587): Vorprüfung erfolgreich, cloudseitiges Notarisierungsjob mangels konfigurierter CI-Secrets wie vorgesehen übersprungen. Veröffentlichung erfolgte vollständig lokal über das vorhandene projektspezifische Profil.
 - Verifikationsgrenze: Die Tests und Download-Prüfungen erfolgten auf diesem Mac. Installation/Start auf einem separaten sauberen Mac bleibt ungeprüft. Die installierte App unter `/Applications` wurde nicht ersetzt.
+
+## Veröffentlicht: v1.1.1 (12.09.2026, GPL-3.0-or-later)
+
+- Release: https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.1.1
+- Unveränderlicher Tag `v1.1.1` auf Release-Commit `3c17eb488322aa4ae14ea220efbf4c155ff24d31` (Version 1.1.1 / Build 3). Diese Abschlussdokumentation folgt separat.
+- DMG: [Codex-Usage-Analyzer-1.1.1-mac-arm64.dmg](https://github.com/r3d42-git/codex-usage-analyzer/releases/download/v1.1.1/Codex-Usage-Analyzer-1.1.1-mac-arm64.dmg), 1.272.894 Bytes, SHA-256 `fbadf1458d90d0d8dc0e1ce3d87288f6a7ca194eb719d8c2b030edb9be27702a`. Öffentliche `.dmg.sha256` und GitHub-Asset-Digest stimmen mit dem frischen Download überein.
+- Apple: App-ZIP `e2926c0e-64cc-4b49-bf81-a3be9d7cb2a7` und finale DMG `3f32f328-a344-4264-8656-1d85fa725565` jeweils **Accepted**. App vor dem Verpacken und DMG separat gestapelt.
+- DMG und enthaltener App: arm64, Bundle-ID `com.c5vcpq5gsr.codexusageanalyzer`, Developer ID Application: Philipp John Hild (G6JH37W285), Hardened Runtime und Timestamp. Lokaler finaler Container und frischer GitHub-Download bestanden `codesign`, `hdiutil verify`, App-/DMG-`stapler validate`, Gatekeeper (`source=Notarized Developer ID`) sowie die bytegenaue GPL-`LICENSE.txt`-Prüfung.
+- Release-Gates: 12 Swift-Tests, Python-Preisfälle, Lizenz-Prüfungen und Publisher-Trockenlauf erfolgreich. Ein anfänglich fehlendes `ROOT_DIR` im neuen Lizenz-Verifier wurde vor der Veröffentlichung erkannt, korrigiert und am finalen Artefakt sowie ungültigem Pfad geprüft. Die erste unvollständige lokale Release-Ausführung liegt als `.release/1.1.1-preflight-failed/` vor; sie wurde nie veröffentlicht.
+- Verifikationsgrenze: Kein separater sauberer Mac getestet; die installierte App unter `/Applications` wurde nicht ersetzt.
 
 ## Veröffentlichung
 
