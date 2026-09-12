@@ -67,7 +67,7 @@ Caching and immediate activity filtering are features of the native app; the Pyt
 
 ## Release
 
-The current public release is [v1.1.0](https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.1.0). It provides the notarized Apple-Silicon DMG and its SHA-256 checksum.
+The current public release is [v1.1.1](https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.1.1). It provides the notarized Apple-Silicon DMG and its SHA-256 checksum.
 
 `script/release.sh VERSION` requires the local environment variables `DEVELOPMENT_TEAM` and `SIGNING_IDENTITY`. The existing local Keychain profile defaults to `codex-usage-analyzer.notary` (override with `NOTARY_PROFILE`); no credentials are stored in the repository. The tag workflow expects these GitHub secrets: `MACOS_CERTIFICATE_P12`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_SIGNING_IDENTITY`, `APPLE_DEVELOPMENT_TEAM`, `APPLE_API_KEY_P8`, `APPLE_API_KEY_ID`, and `APPLE_API_ISSUER`.
 
@@ -75,4 +75,4 @@ The release script requires a clean `main` and matching Xcode version. It notari
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Ab v1.1.1 steht Codex Usage Analyzer unter **GPL-3.0-or-later**. Die vollständigen Bedingungen stehen in [LICENSE](LICENSE) und liegen als `LICENSE.txt` auch in der DMG. Bereits veröffentlichte ältere Quellstände behalten ihre damalige MIT-Lizenz; diese Lizenzgewährungen werden nicht rückwirkend geändert.

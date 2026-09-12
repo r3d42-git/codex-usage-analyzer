@@ -15,6 +15,8 @@ import re,sys,pathlib
 versions=re.findall(r'MARKETING_VERSION = ([^;]+);',pathlib.Path('CodexUsageAnalyzer.xcodeproj/project.pbxproj').read_text())
 assert versions and set(versions)=={sys.argv[1]}, 'Xcode version must match release version'
 PY
+grep -Fq 'GNU GENERAL PUBLIC LICENSE' LICENSE
+grep -Fq 'Version 3, 29 June 2007' LICENSE
 APP_NAME="Codex Usage Analyzer"
 RELEASE_DIR="$ROOT_DIR/.release/$VERSION"
 [[ ! -e "$RELEASE_DIR" ]] || { echo "Release directory already exists: $RELEASE_DIR" >&2; exit 1; }
@@ -50,6 +52,7 @@ notarize "$RELEASE_DIR/app-notary.zip" "$RELEASE_DIR/app-notary.json"
 xcrun stapler staple "$APP_PATH"
 xcrun stapler validate "$APP_PATH"
 ditto "$APP_PATH" "$STAGE_DIR/$APP_NAME.app"
+ditto "$ROOT_DIR/LICENSE" "$STAGE_DIR/LICENSE.txt"
 ln -s /Applications "$STAGE_DIR/Applications"
 hdiutil create -volname "$APP_NAME" -srcfolder "$STAGE_DIR" -format UDZO "$DMG_PATH"
 codesign --force --sign "$SIGNING_IDENTITY" --timestamp "$DMG_PATH"

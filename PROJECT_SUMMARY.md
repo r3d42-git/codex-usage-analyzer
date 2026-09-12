@@ -55,6 +55,13 @@
 - Release-Skript ergänzt: sauberer `main`, Versionsgleichheit, frühe Profilprüfung, keine Löschung vorhandener Release-Verzeichnisse, belegter Quellcommit, separate App- und DMG-Einreichungen mit Accepted-Prüfung und gespeicherten Submission-JSONs. Eingepackte App muss bereits ein gültiges Staple-Ticket tragen.
 - Verifier kontrolliert nun zusätzlich App-Ticket, Developer ID/Team G6JH37W285, Hardened Runtime/Timestamp, Bundle-ID, Version und arm64. Publisher prüft lokalen Stand, Quellcommit, lokale Prüfsumme, unveröffentlichten Tag, bietet `--dry-run`, publiziert vom expliziten Repository und vergleicht frischen Download auch mit GitHubs Asset-Digest. Tag bleibt unveränderlich; Abschlussbelege folgen als Dokumentationscommit.
 
+## Release-Vorbereitung v1.1.1: GPL-3.0-or-later
+
+- Nutzerauftrag: neuer Release mit GPL-3.0-or-later; anschließend öffentliche Release-Seite und Tag `v1.1.0` löschen. Der historische MIT-Quellstand bleibt in Git-Geschichte und vorhandenen Klonen rechtlich unverändert, wird aber nicht weiter als GitHub-Release angeboten.
+- `LICENSE` ist der unveränderte offizielle GNU-Text der GPL Version 3 vom 29.06.2007. README und Release Notes bezeichnen den Wechsel eindeutig als vorwärtsgerichtet ab v1.1.1.
+- Die DMG enthält `LICENSE.txt`. `release.sh` verlangt vor dem Build den GPL-Text; `verify_release.sh` verlangt nach dem Mount dieselbe Datei und vergleicht sie bytegenau mit dem Quellstand. Damit kann kein Release ohne sichtbare GPL-Lizenz im ausgelieferten Container erstellt werden.
+- Version 1.1.1, Build 3, arm64. Die Preislogik bleibt unverändert; der Hinweis, dass Astra für den Nutzer in Codex derzeit nicht auswählbar ist, ist kein Änderungsauftrag.
+
 ## Veröffentlicht: v1.1.0 (12.09.2026)
 
 - Release: https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.1.0

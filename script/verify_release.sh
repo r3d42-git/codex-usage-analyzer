@@ -4,6 +4,7 @@ set -euo pipefail
 DMG_PATH="${1:?usage: ./script/verify_release.sh /path/to/release.dmg [VERSION]}"
 VERSION="${2:-$(basename "$DMG_PATH" | sed -E 's/^Codex-Usage-Analyzer-(.*)-mac-arm64\.dmg$/\1/')}"
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Invalid release version' >&2; exit 1; }
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MOUNT_DIR="$(mktemp -d /private/tmp/codex-usage-analyzer-verify.XXXXXX)"
 cleanup() {
   hdiutil detach "$MOUNT_DIR" -quiet >/dev/null 2>&1 || true
@@ -18,6 +19,10 @@ spctl --assess --type open --context context:primary-signature --verbose=4 "$DMG
 hdiutil attach "$DMG_PATH" -readonly -nobrowse -mountpoint "$MOUNT_DIR" -quiet
 APP_PATH="$MOUNT_DIR/Codex Usage Analyzer.app"
 test -d "$APP_PATH"
+test -f "$MOUNT_DIR/LICENSE.txt"
+cmp "$ROOT_DIR/LICENSE" "$MOUNT_DIR/LICENSE.txt"
+grep -Fq 'GNU GENERAL PUBLIC LICENSE' "$MOUNT_DIR/LICENSE.txt"
+grep -Fq 'Version 3, 29 June 2007' "$MOUNT_DIR/LICENSE.txt"
 codesign --verify --deep --strict --verbose=2 "$APP_PATH"
 SIGNATURE="$(codesign -dvv "$APP_PATH" 2>&1)"
 printf '%s\n' "$SIGNATURE"
