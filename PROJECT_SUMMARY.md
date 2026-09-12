@@ -55,6 +55,18 @@
 - Release-Skript ergänzt: sauberer `main`, Versionsgleichheit, frühe Profilprüfung, keine Löschung vorhandener Release-Verzeichnisse, belegter Quellcommit, separate App- und DMG-Einreichungen mit Accepted-Prüfung und gespeicherten Submission-JSONs. Eingepackte App muss bereits ein gültiges Staple-Ticket tragen.
 - Verifier kontrolliert nun zusätzlich App-Ticket, Developer ID/Team G6JH37W285, Hardened Runtime/Timestamp, Bundle-ID, Version und arm64. Publisher prüft lokalen Stand, Quellcommit, lokale Prüfsumme, unveröffentlichten Tag, bietet `--dry-run`, publiziert vom expliziten Repository und vergleicht frischen Download auch mit GitHubs Asset-Digest. Tag bleibt unveränderlich; Abschlussbelege folgen als Dokumentationscommit.
 
+## Veröffentlicht: v1.1.0 (12.09.2026)
+
+- Release: https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.1.0
+- Unveränderlicher Tag `v1.1.0` auf Release-Commit `75e06db947d7feaffb45eb6efda1243bf9fdd29b` (Version 1.1.0 / Build 2); diese Abschlussdokumentation folgt separat.
+- DMG: [Codex-Usage-Analyzer-1.1.0-mac-arm64.dmg](https://github.com/r3d42-git/codex-usage-analyzer/releases/download/v1.1.0/Codex-Usage-Analyzer-1.1.0-mac-arm64.dmg), 1.257.428 Bytes, SHA-256 `bf48d5566a452ce8d7db45557a1dc09f88e32e97a706a74215674068512b6b7c`. Öffentliche `.dmg.sha256` ist hochgeladen und gegen den frischen Download geprüft.
+- Apple: App-ZIP `ebc9629f-c741-4080-a046-ea2221efd3f8` und finale DMG `78ad8684-36af-44a1-95cb-5ac8eeb6d25c` jeweils **Accepted**. App vor dem Verpacken und DMG separat gestapelt. Lokale JSON-Belege unter `.release/1.1.0/`.
+- Identität: `com.c5vcpq5gsr.codexusageanalyzer`, arm64, Developer ID Application: Philipp John Hild (G6JH37W285), Hardened Runtime und Timestamp. Lokaler finaler Container und frischer GitHub-Download bestanden `codesign`, `hdiutil verify`, App-/DMG-`stapler validate` und Gatekeeper (`source=Notarized Developer ID`). GitHub-Asset-Digest, lokale Prüfsumme und Download sind identisch.
+- Lokale Release-Gates: 12 Swift-Tests sowie Python-Preisfälle erfolgreich. Publisher-Trockenlauf, Versionsabwehr und sauberer Quellstand geprüft.
+- GitHub CI zum Release-Commit: [34719024748](https://github.com/r3d42-git/codex-usage-analyzer/actions/runs/34719024748), Swift-Tests und Xcode-Build erfolgreich.
+- GitHub Release-Workflow [34719025587](https://github.com/r3d42-git/codex-usage-analyzer/actions/runs/34719025587): Vorprüfung erfolgreich, cloudseitiges Notarisierungsjob mangels konfigurierter CI-Secrets wie vorgesehen übersprungen. Veröffentlichung erfolgte vollständig lokal über das vorhandene projektspezifische Profil.
+- Verifikationsgrenze: Die Tests und Download-Prüfungen erfolgten auf diesem Mac. Installation/Start auf einem separaten sauberen Mac bleibt ungeprüft. Die installierte App unter `/Applications` wurde nicht ersetzt.
+
 ## Veröffentlichung
 
 - Vorgesehenes Ziel: `r3d42-git/codex-usage-analyzer`.
