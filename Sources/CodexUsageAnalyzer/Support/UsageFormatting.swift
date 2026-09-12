@@ -32,7 +32,7 @@ enum UsageFormatting {
     static func localDate(_ value: Date, includeTime: Bool = true) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "de_DE")
-        formatter.dateFormat = includeTime ? "dd.MM.yyyy, HH:mm" : "dd.MM."
+        formatter.dateFormat = includeTime ? "dd.MM.yyyy, HH:mm" : "dd.MM.yyyy"
         return formatter.string(from: value)
     }
 

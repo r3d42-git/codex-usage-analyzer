@@ -11,6 +11,7 @@ let package = Package(
         .executableTarget(
             name: "CodexUsageAnalyzer",
             path: "Sources/CodexUsageAnalyzer",
+            resources: [.process("Resources")],
             linkerSettings: [.linkedFramework("WebKit")]
         ),
         .testTarget(

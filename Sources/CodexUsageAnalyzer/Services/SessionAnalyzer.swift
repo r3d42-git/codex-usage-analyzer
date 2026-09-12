@@ -2,17 +2,9 @@ import Foundation
 
 struct SessionAnalyzer: Sendable {
     typealias Progress = @Sendable (_ completed: Int, _ total: Int) -> Void
+    var cache: SessionAnalysisCache?
 
-    private static let rates: [String: (input: Double, cached: Double, output: Double)] = [
-        "gpt-5.6-sol": (125.0, 12.5, 750.0),
-        "gpt-5.6-terra": (62.5, 6.25, 375.0),
-        "gpt-5.6-luna": (25.0, 2.5, 150.0),
-        "gpt-5.5": (125.0, 12.5, 750.0),
-        "gpt-5.4": (62.5, 6.25, 375.0),
-        "gpt-5.4-mini": (18.75, 1.875, 113.0),
-        "gpt-5.3-codex": (43.75, 4.375, 350.0),
-        "gpt-5.2": (43.75, 4.375, 350.0)
-    ]
+    var pricing: PricingCatalog = .bundled
 
     func analyze(root: URL, since: Date? = nil, progress: Progress? = nil) throws -> AnalysisResult {
         var isDirectory: ObjCBool = false
@@ -26,29 +18,75 @@ struct SessionAnalyzer: Sendable {
             .sorted { $0.path < $1.path }
         guard !files.isEmpty else { throw AnalyzerError.noLogFiles(root) }
 
-        let cutoff = since.map { Calendar.current.startOfDay(for: $0) }
+        let previous = cache?.load(root: root) ?? [:]
+        var updated: [String: SessionAnalysisCache.Entry] = [:]
         var sessions: [UsageSession] = []
+        var readCount = 0
+        var reusedCount = 0
         for (index, file) in files.enumerated() {
-            if let session = analyzeFile(file), cutoff.map({ session.ended >= $0 }) ?? true {
+            let before = SessionAnalysisCache.Fingerprint.read(file)
+            var session: UsageSession?
+            if let before, let entry = previous[file.path], entry.fingerprint == before {
+                session = entry.session
+                updated[file.path] = entry
+                reusedCount += 1
+            } else {
+                readCount += 1
+                do {
+                    session = try analyzeFile(file)
+                    // Do not persist a partial snapshot of a log that changed while being read.
+                    if let before, before == SessionAnalysisCache.Fingerprint.read(file) {
+                        updated[file.path] = .init(fingerprint: before, session: session)
+                    }
+                } catch {
+                    // A temporarily unreadable file must be retried on the next refresh.
+                }
+            }
+            if var session {
+                session.dateKey = dateKey(session.ended)
+                session.estimatedCredits = estimatedCredits(model: session.model, input: session.inputTokens,
+                                                             cached: session.cachedInputTokens, output: session.outputTokens)
                 sessions.append(session)
             }
             progress?(index + 1, files.count)
         }
+        var cacheWriteFailed = false
+        do { try cache?.save(updated, root: root) } catch { cacheWriteFailed = true }
         guard !sessions.isEmpty else { throw AnalyzerError.noUsableSessions }
 
-        return AnalysisResult(
+        let result = AnalysisResult(
             sessions: sessions,
             projects: projectSummaries(sessions),
             daily: dailySummaries(sessions),
             modelEffort: modelEffortSummaries(sessions),
             scannedFileCount: files.count,
-            generatedAt: Date()
+            generatedAt: Date(),
+            readFileCount: readCount,
+            reusedFileCount: reusedCount,
+            cacheWriteFailed: cacheWriteFailed
         )
+        return filtered(result, since: since)
     }
 
-    private func analyzeFile(_ url: URL) -> UsageSession? {
+    /// Filters whole sessions by last activity, retaining all cumulative tokens.
+    func filtered(_ result: AnalysisResult, since: Date?) -> AnalysisResult {
+        let cutoff = since.map { Calendar.current.startOfDay(for: $0) }
+        let sessions = result.sessions.filter { session in cutoff.map { session.ended >= $0 } ?? true }.map { original in
+            var session = original
+            session.estimatedCredits = estimatedCredits(model: session.model, input: session.inputTokens,
+                                                         cached: session.cachedInputTokens, output: session.outputTokens)
+            return session
+        }
+        return AnalysisResult(sessions: sessions, projects: projectSummaries(sessions), daily: dailySummaries(sessions),
+                              modelEffort: modelEffortSummaries(sessions), scannedFileCount: result.scannedFileCount,
+                              generatedAt: result.generatedAt, readFileCount: result.readFileCount,
+                              reusedFileCount: result.reusedFileCount, cacheWriteFailed: result.cacheWriteFailed,
+                              activitySince: cutoff, pricing: pricing)
+    }
+
+    private func analyzeFile(_ url: URL) throws -> UsageSession? {
         let fallback = (try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? Date()
-        guard let contents = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+        let contents = try String(contentsOf: url, encoding: .utf8)
 
         var firstDate: Date?
         var lastDate: Date?
@@ -187,14 +225,17 @@ struct SessionAnalyzer: Sendable {
     }
 
     private func estimatedCredits(model: String, input: Int, cached: Int, output: Int) -> Double? {
-        let rate = Self.rates[model] ?? Self.rates.first(where: { model.contains($0.key) || $0.key.contains(model) })?.value
+        // Only strip dated snapshots. Substring matching can price unknown variants
+        // (e.g. gpt-5.4-pro) as the base model, or a mini snapshot as the full model.
+        let base = model.replacingOccurrences(of: "-[0-9]{4}-[0-9]{2}-[0-9]{2}$", with: "", options: .regularExpression)
+        let rate = pricing.rates[base]
         guard let rate else { return nil }
         return (Double(max(0, input - cached)) * rate.input + Double(cached) * rate.cached + Double(output) * rate.output) / 1_000_000
     }
 
     private func normalizeModel(_ value: String) -> String {
         let raw = value.lowercased().trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "_", with: "-").replacingOccurrences(of: " ", with: "-")
-        let aliases = ["sol": "gpt-5.6-sol", "terra": "gpt-5.6-terra", "luna": "gpt-5.6-luna", "5.6-sol": "gpt-5.6-sol", "5.6-terra": "gpt-5.6-terra", "5.6-luna": "gpt-5.6-luna"]
+        let aliases = ["astra": "gpt-6-astra", "6-astra": "gpt-6-astra", "gpt-5.6": "gpt-5.6-sol", "sol": "gpt-5.6-sol", "terra": "gpt-5.6-terra", "luna": "gpt-5.6-luna", "5.6-sol": "gpt-5.6-sol", "5.6-terra": "gpt-5.6-terra", "5.6-luna": "gpt-5.6-luna"]
         return aliases[raw] ?? (raw.isEmpty ? "unbekannt" : raw)
     }
 

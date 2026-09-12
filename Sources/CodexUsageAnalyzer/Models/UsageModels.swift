@@ -1,7 +1,7 @@
 import Foundation
 
-struct UsageSession: Identifiable, Hashable, Sendable {
-    let dateKey: String
+struct UsageSession: Identifiable, Hashable, Sendable, Codable {
+    var dateKey: String
     let started: Date
     let ended: Date
     let project: String
@@ -16,7 +16,7 @@ struct UsageSession: Identifiable, Hashable, Sendable {
     let outputTokens: Int
     let reasoningTokens: Int
     let totalTokens: Int
-    let estimatedCredits: Double?
+    var estimatedCredits: Double?
     let sessionID: String
     let logFile: String
     let malformedLines: Int
@@ -79,6 +79,11 @@ struct AnalysisResult: Hashable, Sendable {
     let modelEffort: [ModelEffortSummary]
     let scannedFileCount: Int
     let generatedAt: Date
+    var readFileCount = 0
+    var reusedFileCount = 0
+    var cacheWriteFailed = false
+    var activitySince: Date?
+    var pricing: PricingCatalog = .bundled
 }
 
 enum AnalyzerError: LocalizedError, Sendable {

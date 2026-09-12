@@ -25,6 +25,7 @@ enum AppAppearance: String, CaseIterable, Identifiable {
 }
 
 struct ContentView: View {
+    @State private var showsPricing = false
     @StateObject private var model = AnalyzerViewModel()
     @AppStorage("appAppearance") private var appearanceRawValue = AppAppearance.system.rawValue
 
@@ -55,6 +56,12 @@ struct ContentView: View {
         .frame(minWidth: 920, minHeight: 620)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
+                Button { showsPricing = true } label: {
+                    Label("Raten & Creditwert", systemImage: "creditcard")
+                }
+                .labelStyle(.titleAndIcon)
+                .help("Modellraten, API-Vergleich in Euro und US-Dollar und Preisaktualisierung")
+
                 Button(action: model.exportReport) {
                     Label("Exportieren", systemImage: "square.and.arrow.up")
                 }
@@ -65,9 +72,10 @@ struct ContentView: View {
                     Label("Aktualisieren", systemImage: "arrow.clockwise")
                 }
                 .keyboardShortcut("r", modifiers: .command)
-                .disabled(model.sourceDirectory == nil || model.isAnalyzing)
+                .disabled(model.sourceDirectory == nil || model.isAnalyzing || model.isUpdatingPricing)
             }
         }
+        .sheet(isPresented: $showsPricing) { PricingView(model: model) }
         .alert("Codex Usage Analyzer", isPresented: Binding(get: { model.alertMessage != nil }, set: { if !$0 { model.alertMessage = nil } })) {
             Button("OK", role: .cancel) { model.alertMessage = nil }
         } message: {
@@ -79,6 +87,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
                 Button("Sitzungsordner auswählen …", action: model.selectSourceDirectory)
+                    .disabled(model.isAnalyzing)
                 Text(model.sourceLabel)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -87,11 +96,13 @@ struct ContentView: View {
                 appearancePicker
             }
             HStack(spacing: 12) {
-                Toggle("Nur ab", isOn: $model.usesSince)
+                Toggle("Sessions mit Aktivität ab", isOn: $model.usesSince)
                     .toggleStyle(.checkbox)
+                    .disabled(model.isAnalyzing)
+                    .help("Berücksichtigt Sessions mit letzter Aktivität ab diesem Datum. Alle Tokens dieser Sessions zählen, auch vor dem Datum.")
                 DatePicker("", selection: $model.sinceDate, displayedComponents: .date)
                     .labelsHidden()
-                    .disabled(!model.usesSince)
+                    .disabled(!model.usesSince || model.isAnalyzing)
                 Spacer()
                 if model.isAnalyzing {
                     ProgressView()

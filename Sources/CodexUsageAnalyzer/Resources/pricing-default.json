@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "checkedAt": "2026-09-12T00:00:00Z",
+  "isBundled": true,
+  "rates": {
+    "gpt-6-astra": {
+      "input": 250.0,
+      "cached": 25.0,
+      "output": 1250.0,
+      "verifiedAt": "2026-09-12T00:00:00Z",
+      "retained": false
+    },
+    "gpt-5.6-sol": {
+      "input": 100.0,
+      "cached": 10.0,
+      "output": 500.0,
+      "verifiedAt": "2026-09-12T00:00:00Z",
+      "retained": false
+    },
+    "gpt-5.6-terra": {
+      "input": 50.0,
+      "cached": 5.0,
+      "output": 300.0,
+      "verifiedAt": "2026-09-12T00:00:00Z",
+      "retained": false
+    },
+    "gpt-5.6-luna": {
+      "input": 5.0,
+      "cached": 0.5,
+      "output": 30.0,
+      "verifiedAt": "2026-09-12T00:00:00Z",
+      "retained": false
+    },
+    "gpt-5.5": {
+      "input": 125.0,
+      "cached": 12.5,
+      "output": 750.0,
+      "verifiedAt": "2026-09-12T00:00:00Z",
+      "retained": false
+    },
+    "gpt-5.4": {
+      "input": 62.5,
+      "cached": 6.25,
+      "output": 375.0,
+      "verifiedAt": "2026-09-12T00:00:00Z",
+      "retained": false
+    },
+    "gpt-5.4-mini": {
+      "input": 18.75,
+      "cached": 1.875,
+      "output": 113.0,
+      "verifiedAt": "2026-09-12T00:00:00Z",
+      "retained": false
+    },
+    "gpt-5.3-codex": {
+      "input": 43.75,
+      "cached": 4.375,
+      "output": 350.0,
+      "verifiedAt": "2026-07-23T00:00:00Z",
+      "retained": true
+    },
+    "gpt-5.2": {
+      "input": 43.75,
+      "cached": 4.375,
+      "output": 350.0,
+      "verifiedAt": "2026-07-23T00:00:00Z",
+      "retained": true
+    },
+    "gpt-rosalind-research": {
+      "input": 125,
+      "cached": 12.5,
+      "output": 625,
+      "verifiedAt": "2026-09-12T00:00:00Z",
+      "retained": false
+    }
+  },
+  "usdPerCredit": 0.04,
+  "usdPerEUR": 1.1592,
+  "exchangeDate": "2026-09-11"
+}

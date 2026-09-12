@@ -24,15 +24,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
-# Credits pro 1 Mio Tokens, Stand 23.07.2026.
-# Quelle: OpenAI Codex Rate Card.
+# Standard-Credits pro 1 Mio Tokens, geprüft am 12.09.2026.
+# Quelle: https://learn.chatgpt.com/docs/pricing#token-rates
+RATE_CARD_DATE = "12.09.2026"
 RATES = {
-    "gpt-5.6-sol":   (125.0, 12.5, 750.0),
-    "gpt-5.6-terra": (62.5, 6.25, 375.0),
-    "gpt-5.6-luna":  (25.0, 2.5, 150.0),
+    "gpt-6-astra":   (250.0, 25.0, 1250.0),
+    "gpt-5.6-sol":   (100.0, 10.0, 500.0),
+    "gpt-5.6-terra": (50.0, 5.0, 300.0),
+    "gpt-5.6-luna":  (5.0, 0.5, 30.0),
     "gpt-5.5":       (125.0, 12.5, 750.0),
     "gpt-5.4":       (62.5, 6.25, 375.0),
     "gpt-5.4-mini":  (18.75, 1.875, 113.0),
+    # Beibehaltene Altraten vom 23.07.2026, in der aktuellen Karte nicht mehr gelistet.
     "gpt-5.3-codex": (43.75, 4.375, 350.0),
     "gpt-5.2":       (43.75, 4.375, 350.0),
 }
@@ -62,6 +65,9 @@ def normalize_model(model: str) -> str:
     s = (model or "unbekannt").lower().strip()
     s = s.replace("_", "-").replace(" ", "-")
     aliases = {
+        "astra": "gpt-6-astra",
+        "6-astra": "gpt-6-astra",
+        "gpt-5.6": "gpt-5.6-sol",
         "sol": "gpt-5.6-sol",
         "terra": "gpt-5.6-terra",
         "luna": "gpt-5.6-luna",
@@ -169,13 +175,9 @@ def usage_from_obj(obj: dict[str, Any]) -> dict[str, int] | None:
 
 def estimated_credits(model: str, input_tokens: int, cached: int, output: int) -> float | None:
     key = normalize_model(model)
-    rate = RATES.get(key)
-    if rate is None:
-        # Versionssuffixe tolerieren.
-        for candidate, candidate_rate in RATES.items():
-            if candidate in key or key in candidate:
-                rate = candidate_rate
-                break
+    # Nur datierte Snapshots zuordnen; unbekannte Modellvarianten nicht erraten.
+    base = re.sub(r"-[0-9]{4}-[0-9]{2}-[0-9]{2}$", "", key)
+    rate = RATES.get(base)
     if rate is None:
         return None
     input_rate, cache_rate, output_rate = rate
@@ -452,7 +454,7 @@ def write_html(
 
     model_cards = []
     for row in model_effort:
-        credits = "–" if not row.get("credits_complete", True) else f"${row['estimated_credits']:,.2f}"
+        credits = "–" if not row.get("credits_complete", True) else f"{row['estimated_credits']:,.2f} Credits"
         model_cards.append(f'''
         <article class="model-card">
           <div class="model-head"><span class="model-dot"></span><strong>{html.escape(row['model'])}</strong></div>
@@ -471,17 +473,17 @@ def write_html(
         value = float(row.get("estimated_credits") or 0)
         height = max(2, value / max_daily * 100) if value else 2
         label = datetime.fromisoformat(row["date"]).strftime("%d.%m.")
-        title = f"{row['date']}: ${value:,.2f}; {fmt(row['total_tokens'])} Tokens"
+        title = f"{row['date']}: {value:,.2f} Credits; {fmt(row['total_tokens'])} Tokens"
         bars.append(f'''
           <div class="bar-item" title="{html.escape(title)}">
-            <div class="bar-value">${value:,.0f}</div>
+            <div class="bar-value">{value:,.0f}</div>
             <div class="bar-track"><div class="bar" style="height:{height:.2f}%"></div></div>
             <div class="bar-label">{label}</div>
           </div>''')
 
     project_rows = []
     for row in projects:
-        credits = "–" if not row.get("credits_complete", True) else f"${row['estimated_credits']:,.2f}"
+        credits = "–" if not row.get("credits_complete", True) else f"{row['estimated_credits']:,.2f} Credits"
         cache_pct = row['cached_input_tokens'] / row['input_tokens'] * 100 if row['input_tokens'] else 0
         project_rows.append(f'''
           <tr>
@@ -495,7 +497,7 @@ def write_html(
 
     session_cards = []
     for row in sorted(sessions, key=lambda r: r["ended"], reverse=True):
-        cost = "nicht berechenbar" if row["estimated_credits"] is None else f"${row['estimated_credits']:,.2f}"
+        cost = "nicht berechenbar" if row["estimated_credits"] is None else f"{row['estimated_credits']:,.2f} Credits"
         dt = datetime.fromisoformat(row["ended"])
         cache_pct = row['cached_input_tokens'] / row['input_tokens'] * 100 if row['input_tokens'] else 0
         search_blob = " ".join(str(row.get(k, "")) for k in ("project", "task", "model", "effort")).lower()
@@ -506,7 +508,7 @@ def write_html(
             <div class="session-meta"><span>{html.escape(row['model'])}</span><span>{html.escape(row['effort'])}</span><span>{dt.strftime('%d.%m.%Y, %H:%M')}</span><span>{session_duration(row['started'], row['ended'])}</span></div>
             <div class="token-line"><span><b>frisch</b> {compact_num(row['uncached_input_tokens'])}</span><span><b>cached</b> {compact_num(row['cached_input_tokens'])} ({cache_pct:.1f} %)</span><span><b>output</b> {compact_num(row['output_tokens'])}</span><span><b>reasoning</b> {compact_num(row['reasoning_tokens'])}</span></div>
           </div>
-          <div class="session-cost"><strong>{cost}</strong><small>hypothetische API-Kosten</small></div>
+          <div class="session-cost"><strong>{cost}</strong><small>geschätzte Codex-Credits</small></div>
         </article>''')
 
     model_options = ''.join(f'<option value="{html.escape(x.lower())}">{html.escape(x)}</option>' for x in sorted({r['model'] for r in sessions}))
@@ -525,13 +527,13 @@ def write_html(
 .filters{{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}}input,select{{background:#fff;border:1px solid var(--line);padding:8px 10px;color:var(--text);font:inherit}}input{{min-width:280px;flex:1}}.session{{display:grid;grid-template-columns:1fr 180px;gap:18px;padding:14px 12px;border-top:1px solid #e1dfd8;background:var(--panel)}}.session:first-of-type{{border-top:0}}.session-title-row{{display:flex;align-items:baseline;gap:9px;min-width:0}}.badge{{font-size:9px;letter-spacing:.08em;border:1px solid #9da29c;padding:2px 5px;color:#626762}}.task{{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}.session-meta,.token-line{{display:flex;gap:11px;flex-wrap:wrap;color:var(--muted);font-size:11px;margin-top:6px}}.token-line b{{color:#5d605a;font-weight:600}}.session-cost{{text-align:right;align-self:center}}.session-cost strong{{font-size:18px;display:block}}.session-cost small{{color:var(--muted);font-size:10px}}.empty{{display:none;text-align:center;color:var(--muted);padding:30px}}footer{{color:var(--muted);font-size:11px;line-height:1.5;margin-top:22px}}
 @media(max-width:900px){{.summary-grid{{grid-template-columns:repeat(2,1fr)}}.session{{grid-template-columns:1fr}}.session-cost{{text-align:left}}}}@media(max-width:560px){{main{{padding:20px 12px}}.summary-grid{{grid-template-columns:1fr 1fr}}.header{{align-items:flex-start}}.total strong{{font-size:19px}}input{{min-width:100%}}}}@media(prefers-color-scheme:dark){{:root{{--bg:#191a18;--panel:#232420;--text:#ecece7;--muted:#a6a79f;--line:#3d3e38;--shadow:none}}input,select{{background:#1d1e1b;color:var(--text)}}.summary-card,.model-card,.chart-panel,.table-panel,.sessions-panel,.session{{border-color:#353630}}td{{border-color:#353630}}}}
 </style></head><body><main>
-<header class="header"><div><div class="header-title"><h1>Codex-Verbrauch</h1></div><p class="sub">Lokale Sitzungslogs · erzeugt am {html.escape(datetime.now().astimezone().strftime('%d.%m.%Y, %H:%M'))}</p></div><div class="total">geschätzte Gesamtkosten<strong>${known_credits:,.2f}</strong></div></header>{warning}
+<header class="header"><div><div class="header-title"><h1>Codex-Verbrauch</h1></div><p class="sub">Lokale Sitzungslogs · erzeugt am {html.escape(datetime.now().astimezone().strftime('%d.%m.%Y, %H:%M'))}</p></div><div class="total">geschätzte Credits (bekannte Raten)<strong>{known_credits:,.2f} Credits</strong></div></header>{warning}
 <h2 class="section-title">Übersicht</h2><div class="summary-grid"><div class="summary-card"><small>Sessions</small><strong>{fmt(len(sessions))}</strong></div><div class="summary-card"><small>Token gesamt</small><strong>{compact_num(total_tokens)}</strong></div><div class="summary-card"><small>Frischer Input</small><strong>{compact_num(uncached)}</strong></div><div class="summary-card"><small>Cached Input</small><strong>{compact_num(cached)}</strong></div><div class="summary-card"><small>Cache-Anteil</small><strong>{cache_ratio:.1f} %</strong></div><div class="summary-card"><small>Output</small><strong>{compact_num(output)}</strong></div></div>
 <h2 class="section-title">Summen nach Modell und Aufwand</h2><div class="model-grid">{''.join(model_cards)}</div>
-<h2 class="section-title">Verlauf: Kosten pro Tag</h2><section class="chart-panel"><div class="chart">{''.join(bars)}</div></section>
-<h2 class="section-title">Projekte</h2><section class="table-panel"><div class="table-wrap"><table><thead><tr><th>Projekt</th><th>Modell</th><th>Aufwand</th><th>Sessions</th><th>Input</th><th>Cache</th><th>Output</th><th>Gesamt</th><th>Kosten*</th></tr></thead><tbody>{''.join(project_rows)}</tbody></table></div></section>
+<h2 class="section-title">Verlauf: Credits pro Tag</h2><section class="chart-panel"><div class="chart">{''.join(bars)}</div></section>
+<h2 class="section-title">Projekte</h2><section class="table-panel"><div class="table-wrap"><table><thead><tr><th>Projekt</th><th>Modell</th><th>Aufwand</th><th>Sessions</th><th>Input</th><th>Cache</th><th>Output</th><th>Gesamt</th><th>Credits*</th></tr></thead><tbody>{''.join(project_rows)}</tbody></table></div></section>
 <h2 class="section-title">Sessions</h2><section class="sessions-panel"><div class="filters"><input id="search" type="search" placeholder="Projekt oder Aufgabe durchsuchen …"><select id="model"><option value="">Alle Modelle</option>{model_options}</select><select id="effort"><option value="">Alle Aufwände</option>{effort_options}</select></div><div id="sessions">{''.join(session_cards)}</div><div id="empty" class="empty">Keine passenden Sessions gefunden.</div></section>
-<footer>* Hypothetische API-Kosten anhand der im Skript hinterlegten Rate-Card. Sie entsprechen nicht zwingend der tatsächlichen Codex-Kontingentberechnung. Cached Input wird als Teilmenge des Input-Werts behandelt. Pro Session wird der höchste kumulierte Tokenstand verwendet.</footer>
+<footer>* Geschätzte Codex-Credits zu Standardraten, Preisstand {RATE_CARD_DATE} (OpenAI Codex Rate Card). Alle Sessions werden mit diesen Raten neu bewertet; keine historische Abrechnung. GPT-5.3-Codex und GPT-5.2 verwenden die hinterlegten Altraten vom 23.07.2026. Fast-Modus, Langkontext- und Cache-Schreibaufschläge werden nicht berücksichtigt. Credits sind keine US-Dollar und entsprechen nicht zwingend dem tatsächlichen Kontingentverbrauch. Cached Input wird als Teilmenge des Input-Werts behandelt. Pro Session wird der höchste kumulierte Tokenstand verwendet.</footer>
 <script>const search=document.getElementById('search'),model=document.getElementById('model'),effort=document.getElementById('effort');function filterSessions(){{const q=search.value.trim().toLowerCase(),m=model.value,e=effort.value;let visible=0;document.querySelectorAll('.session').forEach(el=>{{const ok=(!q||el.dataset.search.includes(q))&&(!m||el.dataset.model===m)&&(!e||el.dataset.effort===e);el.style.display=ok?'grid':'none';if(ok)visible++;}});document.getElementById('empty').style.display=visible?'none':'block';}}[search,model,effort].forEach(el=>el.addEventListener('input',filterSessions));</script></main></body></html>'''
     path.write_text(doc, encoding="utf-8")
 

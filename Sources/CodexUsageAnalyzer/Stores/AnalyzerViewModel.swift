@@ -7,16 +7,34 @@ final class AnalyzerViewModel: ObservableObject {
     @Published private(set) var sourceDirectory: URL?
     @Published private(set) var report: GeneratedReport?
     @Published private(set) var result: AnalysisResult?
+    @Published private(set) var pricing = PricingStore.local.load()
+    @Published private(set) var isUpdatingPricing = false
+    @Published private(set) var pricingStatus = "Aktualisiert Credit-Raten, API-Vergleich und Euro-Kurs gemeinsam."
     @Published private(set) var isAnalyzing = false
     @Published private(set) var progressText = ""
     @Published private(set) var statusText = "Wähle einen Codex-Sitzungsordner aus."
-    @Published var usesSince = false
-    @Published var sinceDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+    @Published var usesSince = false {
+        didSet {
+            defaults.set(usesSince, forKey: "usesActivitySince")
+            applyActivityFilter()
+        }
+    }
+    @Published var sinceDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date() {
+        didSet {
+            defaults.set(sinceDate, forKey: "activitySinceDate")
+            applyActivityFilter()
+        }
+    }
     @Published var alertMessage: String?
 
     private let accessStore = SessionAccessStore()
+    private let defaults: UserDefaults
+    private var allSessionsResult: AnalysisResult?
 
-    init() {
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        usesSince = defaults.bool(forKey: "usesActivitySince")
+        if let savedDate = defaults.object(forKey: "activitySinceDate") as? Date { sinceDate = savedDate }
         sourceDirectory = accessStore.savedDirectory
         if let sourceDirectory {
             statusText = "Bereit: \(sourceDirectory.path)"
@@ -26,13 +44,17 @@ final class AnalyzerViewModel: ObservableObject {
     var sourceLabel: String { sourceDirectory?.path ?? "Kein Sitzungsordner ausgewählt" }
 
     func selectSourceDirectory() {
+        guard !isAnalyzing, !isUpdatingPricing else { return }
         guard let url = accessStore.chooseDirectory() else { return }
         sourceDirectory = url
+        allSessionsResult = nil
+        result = nil
+        report = nil
         statusText = "Bereit: \(url.path)"
     }
 
     func refresh() {
-        guard !isAnalyzing else { return }
+        guard !isAnalyzing, !isUpdatingPricing else { return }
         let access: ScopedDirectoryAccess
         do {
             access = try accessStore.acquireDirectory()
@@ -41,7 +63,8 @@ final class AnalyzerViewModel: ObservableObject {
             return
         }
         let source = access.url
-        let cutoff = usesSince ? Calendar.current.startOfDay(for: sinceDate) : nil
+        let cache = SessionAnalysisCache.local
+        let pricing = self.pricing
         isAnalyzing = true
         progressText = "Sitzungslogs werden gesucht …"
         statusText = "Auswertung läuft …"
@@ -49,7 +72,8 @@ final class AnalyzerViewModel: ObservableObject {
         let progressStream = AsyncStream<ScanProgress>.makeStream()
         let progressTask = Task { [weak self] in
             for await update in progressStream.stream {
-                self?.progressText = "\(update.completed) von \(update.total) Logdateien gelesen …"
+                guard let self, self.isAnalyzing else { continue }
+                self.progressText = "\(update.completed) von \(update.total) Logdateien geprüft …"
             }
         }
 
@@ -61,22 +85,50 @@ final class AnalyzerViewModel: ObservableObject {
             }
             do {
                 let analysis = try await Task.detached(priority: .userInitiated) {
-                    try SessionAnalyzer().analyze(root: source, since: cutoff) { completed, total in
+                    try SessionAnalyzer(cache: cache, pricing: pricing).analyze(root: source) { completed, total in
                         progressStream.continuation.yield(ScanProgress(completed: completed, total: total))
                     }
                 }.value
                 guard let self else { return }
-                result = analysis
-                report = ReportExporter.makeReport(from: analysis)
+                allSessionsResult = analysis
                 isAnalyzing = false
                 progressText = ""
-                statusText = "\(analysis.sessions.count) Sessions aus \(analysis.scannedFileCount) Logdateien ausgewertet."
+                applyActivityFilter()
             } catch {
                 guard let self else { return }
                 isAnalyzing = false
                 progressText = ""
                 statusText = "Auswertung fehlgeschlagen."
                 alertMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func applyActivityFilter() {
+        guard !isAnalyzing, let allSessionsResult else { return }
+        let filtered = SessionAnalyzer(pricing: pricing).filtered(allSessionsResult, since: usesSince ? sinceDate : nil)
+        result = filtered
+        report = ReportExporter.makeReport(from: filtered)
+        statusText = "\(filtered.sessions.count) Sessions · \(filtered.readFileCount) Logs eingelesen · \(filtered.reusedFileCount) aus Cache"
+        if filtered.cacheWriteFailed { statusText += " · Cache konnte nicht gespeichert werden" }
+    }
+
+    func refreshPricing() {
+        guard !isUpdatingPricing, !isAnalyzing else { return }
+        isUpdatingPricing = true
+        pricingStatus = "OpenAI-Raten, API-Preise und EZB-Kurs werden geprüft …"
+        let previous = pricing
+        Task {
+            defer { isUpdatingPricing = false }
+            do {
+                let updated = try await PricingUpdater().update(previous)
+                try PricingStore.local.save(updated)
+                pricing = updated
+                applyActivityFilter()
+                pricingStatus = "Aktualisiert: \(updated.rates.count) Modellraten, davon \(updated.retainedModels.count) beibehaltene Altraten."
+                if allSessionsResult != nil { pricingStatus += " Die Auswertung wurde ohne erneutes Einlesen neu berechnet." }
+            } catch {
+                pricingStatus = "Aktualisierung fehlgeschlagen. Der bisherige Stand bleibt erhalten. \(error.localizedDescription)"
             }
         }
     }
