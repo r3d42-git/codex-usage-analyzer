@@ -4,11 +4,17 @@ A native macOS app for reviewing local Codex usage logs. It reads `rollout-*.jso
 
 ## Deutsch
 
-Die App wertet lokale Codex-Sitzungslogs aus, ohne Daten ins Netz zu senden. Beim ersten Start wählst du in der App `~/.codex/sessions`; danach genügt **Aktualisieren**. Der bisherige HTML-Bericht erscheint direkt im Fenster, und **Exportieren** legt HTML sowie vier CSV-Dateien in einem neuen, datierten Ordner ab.
+Die App wertet lokale Codex-Sitzungslogs aus, ohne Daten ins Netz zu senden. Beim ersten Start wählst du in der App `~/.codex/sessions`; danach genügt **Aktualisieren**. Der interaktive HTML-Bericht erscheint direkt im Fenster, und **Exportieren** legt HTML sowie vier CSV-Dateien in einem neuen, datierten Ordner ab.
 
 **Sessions mit Aktivität ab** wählt Sessions anhand ihrer letzten protokollierten Aktivität aus. Auch früher begonnene, später fortgesetzte Sessions werden berücksichtigt. Es zählen jeweils sämtliche kumulierten Tokens der Session, einschließlich der Tokens vor dem Stichtag. Der Filter ist keine Messung des ausschließlich seit diesem Datum angefallenen Verbrauchs. Datum und Aktivierung werden für den nächsten Start gespeichert.
 
 Beim ersten **Aktualisieren** liest die App alle Logs und baut einen lokalen Cache auf. Danach prüft sie Dateimetadaten und liest nur neue oder veränderte Logs erneut ein. Unveränderte Auswertungen werden auch nach einem Neustart wiederverwendet. Ein Datumswechsel nach der Auswertung filtert das Ergebnis sofort ohne erneuten Logzugriff. Neue Aktivität wird über **Aktualisieren** übernommen; die Statuszeile unterscheidet eingelesene Logs und Cachetreffer.
+
+## Bericht bedienen
+
+Die Bereiche **Übersicht**, **Projekte**, **Sessions** und **Modelle & Aufwand** sind über eine beim Scrollen sichtbare Navigation erreichbar. Jede Ansicht nutzt die Fensterbreite und hat einen einzigen vertikalen Scrollweg. Bei schmaleren Fenstern werden Projekte als beschriftete Datenblöcke angezeigt.
+
+Projekte lassen sich durchsuchen und nach Tokens, Credits, Sessionzahl oder Name sortieren. Ein Klick auf den Projektnamen öffnet die zugehörigen Sessions. Die Sessionansicht kombiniert Suche mit Projekt-, Modell- und Aufwandfiltern. Projekte erscheinen mit 20, Sessions mit 25 Ergebnissen pro Seite. Beim Aktualisieren oder Wechseln der Darstellung bleiben Bereich, Filter, Ergebnisseite und Scrollposition erhalten. Diese Ansichtsfilter begrenzen nicht den HTML-/CSV-Export; er enthält weiterhin die gesamte Auswertung für den gewählten Aktivitätszeitraum.
 
 ## Raten und Creditwert aktualisieren
 
@@ -27,7 +33,9 @@ Neue eindeutig benannte GPT-Textmodelle werden aus der Tabelle übernommen. Nich
 
 ## English
 
-The app analyzes local Codex session logs without sending data over the network. At first launch select `~/.codex/sessions`, then use **Refresh**. The familiar report appears directly in the app; **Export** writes HTML and four CSV files into a new timestamped folder.
+The app analyzes local Codex session logs without sending data over the network. At first launch select `~/.codex/sessions`, then use **Refresh**. The interactive report appears directly in the app; **Export** writes HTML and four CSV files into a new timestamped folder.
+
+The report has separate Overview, Projects, Sessions, and Models & Effort sections with a single vertical scroll surface. Search and sort projects, open their sessions directly, and combine session filters. Navigation and filters survive refreshes and appearance changes. View filters do not reduce the exported dataset.
 
 ## Requirements and development
 

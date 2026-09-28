@@ -49,6 +49,7 @@ struct ContentView: View {
                         systemImage: "chart.bar.doc.horizontal",
                         description: Text("Wähle den Codex-Sitzungsordner und klicke auf Aktualisieren.")
                     )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         }
