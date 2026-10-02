@@ -4,7 +4,8 @@ set -euo pipefail
 VERSION="${1:?usage: ./script/release.sh VERSION}"
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Invalid release version' >&2; exit 1; }
 : "${DEVELOPMENT_TEAM:?Set DEVELOPMENT_TEAM to your Apple Team ID.}"
-: "${SIGNING_IDENTITY:?Set SIGNING_IDENTITY to a Developer ID Application identity.}"
+# Fingerprint selects the G2 certificate even when Developer ID names match.
+SIGNING_IDENTITY="${SIGNING_IDENTITY:-D548540E7FE1BD9B3C4518CC02D8786E1BFEB885}"
 : "${NOTARY_PROFILE:=codex-usage-analyzer.notary}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
@@ -21,6 +22,8 @@ APP_NAME="Codex Usage Analyzer"
 RELEASE_DIR="$ROOT_DIR/.release/$VERSION"
 [[ ! -e "$RELEASE_DIR" ]] || { echo "Release directory already exists: $RELEASE_DIR" >&2; exit 1; }
 # Validate credentials before spending time on a build. No credentials are modified.
+IDENTITIES="$(security find-identity -v -p codesigning)"
+[[ "$IDENTITIES" == *"$SIGNING_IDENTITY"* ]] || { echo "Developer ID identity unavailable: $SIGNING_IDENTITY" >&2; exit 1; }
 xcrun notarytool history --keychain-profile "$NOTARY_PROFILE" --output-format json >/dev/null
 mkdir -p "$RELEASE_DIR/stage"
 ARCHIVE_PATH="$RELEASE_DIR/$APP_NAME.xcarchive"
