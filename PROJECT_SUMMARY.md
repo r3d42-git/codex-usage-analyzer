@@ -114,9 +114,11 @@
 - Öffentlichen Download frisch nach `/private/tmp/codex-usage-analyzer-release.jgFSjv/` geladen: lokale SHA-256, GitHub-Asset-Digest und Download identisch. Veröffentlichte Prüfsummendatei zusätzlich heruntergeladen und bytegenau verglichen. Download-DMG und ihre enthaltene App bestanden `codesign`, `hdiutil verify`, beide `stapler validate`-Prüfungen und Gatekeeper (`source=Notarized Developer ID`).
 - Verifikationsgrenze: Kein separater sauberer Mac getestet. Die installierte App unter `/Applications` wurde nicht ersetzt; lokale Test-App bleibt unter `dist/`.
 
-## Vorbereitung: v1.2.1 / Build 5 (noch nicht veröffentlicht)
+## Abgeschlossener G2-Release 1.2.1 — 2026-10-02
 
-- Patch-Release zur Umstellung der lokalen Developer-ID-Signatur auf das G2-Zertifikat. Die beiden Xcode-Konfigurationen führen `MARKETING_VERSION = 1.2.1` und `CURRENT_PROJECT_VERSION = 5`; App-Funktionen bleiben gegenüber v1.2.0 unverändert.
-- G2 ist lokal als gültige Signieridentität geprüft und bis 2031 gültig. SHA-1-Fingerabdruck: `D548540E7FE1BD9B3C4518CC02D8786E1BFEB885`. Das Release-Skript verwendet ihn als Standard, respektiert `SIGNING_IDENTITY` und bricht früh ab, wenn die gewählte Identität nicht gültig gelistet ist. So bleibt die Auswahl bei gleichnamigen Zertifikaten eindeutig.
-- Der lokale Release-Vertrag bleibt: sauberer `main`, passende Xcode-Version, `DEVELOPMENT_TEAM`, gültiges lokales Notarytool-Profil `codex-usage-analyzer.notary`, Swift- und Python-Tests, getrennte Notarisierung und Stapling von App und DMG, anschließende Artefaktprüfung. Die GitHub-CI-Notarisierung ist ohne hinterlegte Repository-Secrets weiterhin nicht eingerichtet.
-- Release Notes unter `RELEASE_NOTES/1.2.1.md` vorbereitet. Build, Apple-Notarisierung, Tag, GitHub-Release und Downloadprüfung stehen noch aus; v1.2.0 bleibt bis dahin das veröffentlichte Release.
+- Release [1.2.1](https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.2.1) ist öffentlich veröffentlicht. Annotierter Tag `v1.2.1` bleibt auf Quellcommit `4931e082482975e90d1d3893a5a08803fa63b5c7`; diese Abschlussbelege folgen separat. App-Funktionen bleiben gegenüber dem Vorgänger unverändert.
+- 15 Swift-Tests und Python-Preisprüfung erfolgreich; exakte Quellcommit-CI [Run 36972715447](https://github.com/r3d42-git/codex-usage-analyzer/actions/runs/36972715447) erfolgreich.
+- Apple-Submission(s) `9fdfc4e7-2233-4f22-9679-8c3b3db8d919 / 46b2f525-6df0-4c32-ace4-2fcb6975bb19`: Accepted; App-Ticket angeheftet. Bei DMGs wurden App und Container getrennt notarisiert und gestapelt.
+- Native lokale und frische GitHub-Downloadprüfung: strikte Signatur, Hardened Runtime, sicherer Zeitstempel, Architektur/Bundle-Metadaten, Lizenzmaterial, Stapling und Gatekeeper erfolgreich. Zusätzliche öffentliche Leaf-Prüfung bestätigt exakt G2 SHA-1 `D548540E7FE1BD9B3C4518CC02D8786E1BFEB885`.
+- Asset `Codex-Usage-Analyzer-1.2.1-mac-arm64.dmg`; SHA-256 `b9e9520cce851929524067704942da3982c83c87aaa938bb6a3bb8362f2eab33` stimmt lokal, mit Download und veröffentlichter Prüfsumme überein. Build `5`, Bundle-ID `com.c5vcpq5gsr.codexusageanalyzer`.
+- Keine neue manuelle UI-Abnahme aus diesen Distributionsprüfungen abgeleitet. Bestehende Laufzeit-/UI-Nachweise gelten weiterhin nur für ihren dokumentierten Umfang.

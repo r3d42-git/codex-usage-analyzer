@@ -75,7 +75,7 @@ Caching and immediate activity filtering are features of the native app; the Pyt
 
 ## Release
 
-The current public release is [v1.2.0](https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.2.0). It provides the notarized Apple-Silicon DMG and its SHA-256 checksum.
+The current public release is [v1.2.1](https://github.com/r3d42-git/codex-usage-analyzer/releases/tag/v1.2.1). It provides the notarized Apple-Silicon DMG and its SHA-256 checksum.
 
 `script/release.sh VERSION` requires `DEVELOPMENT_TEAM`. Signing defaults to the G2 Developer ID Application certificate with SHA-1 fingerprint `D548540E7FE1BD9B3C4518CC02D8786E1BFEB885`; set `SIGNING_IDENTITY` to override it. Use a certificate fingerprint when same-name certificates coexist. The existing local Keychain profile defaults to `codex-usage-analyzer.notary` (override with `NOTARY_PROFILE`); no credentials are stored in the repository. The tag workflow expects these GitHub secrets: `MACOS_CERTIFICATE_P12`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_SIGNING_IDENTITY`, `APPLE_DEVELOPMENT_TEAM`, `APPLE_API_KEY_P8`, `APPLE_API_KEY_ID`, and `APPLE_API_ISSUER`.
 
